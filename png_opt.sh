@@ -1,7 +1,7 @@
-#!/bin/bash
+#!/bin/sh
 
 # Recursive PNG optimizer
-# (c) m1kc, 2013
+# (c) m1kc, 2014
 
 #  This program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -18,27 +18,13 @@
 #  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
 #  MA 02110-1301, USA.
 
-d=0
-ARROW="==>"
+
 CR="pngcrush -q -brute -ow"
 OPTI="optipng -quiet -o7"
 
-optimize(){
-	if [ -n "$(ls "${1}" | grep .png)" ]; then
-		echo "$ARROW" "$CR" "${1}"/*.png
-		$CR "${1}"/*.png
-		echo "$ARROW" "$OPTI" "${1}"/*.png
-		$OPTI "${1}"/*.png
-	fi
-}
-
-process(){
-	let d=${d}+1
-	echo "[${d}] entering dir: ${1}"
-	optimize "${1}"
-	for i in $(ls "${1}"); do if [ -d "${1}"/"${i}" ]; then process "${1}"/"${i}"; fi; done
-	echo "[${d}] leaving dir: ${1}"
-	let d=${d}-1
-}
-
-process .
+find -name '*.png' \
+	-exec echo -n "Optimizing {} with pngcrush..." ";" \
+	-exec $CR "{}" ";" \
+	-exec echo -n " optipng..." ";" \
+	-exec $OPTI "{}" ";" \
+	-exec echo " finished." ";"
